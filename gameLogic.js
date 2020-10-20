@@ -1,7 +1,4 @@
 const Game = (x) => {
-    // console.log('im game')
-    // x = this.x
-    // console.log('@@@@@@@@@@@@@@\n', x, '\n@@@@@@@@@@@@@@@')
     for(let i = 0; i < x.length; i++){
         //l u r d
         if(x[i].direction === 37){
@@ -14,7 +11,6 @@ const Game = (x) => {
             x[i].y += 1
         }
     }
-    console.log('return', x)
     return x
 }
 
