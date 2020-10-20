@@ -3,10 +3,17 @@ const collisionCheck = require('./collisionCheck');
 
 const PORT = process.env.PORT || 8000
 
-const httpServer = require('http').createServer((req, res) => {
+//# FOR DEVELOPMENT
+// const httpServer = require('http').createServer((req, res) => {
+//     res.setHeader('Content-Type', 'text/html');
+// });
+// const io = require('socket.io')(httpServer);
+
+//# FOR DEPLOYMENT
+const httpsServer = require('https').createServer((req, res) => {
     res.setHeader('Content-Type', 'text/html');
 });
-const io = require('socket.io')(httpServer);
+const io = require('socket.io')(httpsServer);
 
 let game = []
 let playersId = []
@@ -165,5 +172,5 @@ io.on('connection', socket => {
 })
 
 httpServer.listen(PORT, () => {
-    console.log('go to http://localhost:8000');
+    console.log('Server is running...');
 });
