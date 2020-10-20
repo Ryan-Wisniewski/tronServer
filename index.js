@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 8000
 
 //# FOR DEPLOYMENT
 const httpsServer = require('https').createServer((req, res) => {
-    res.setHeader('Content-Type', 'text/html');
+    res.setHeader('Content-Type', 'text/html', {"Access-Control-Allow-Origin": '*'})
 });
 
 
