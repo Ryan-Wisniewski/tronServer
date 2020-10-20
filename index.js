@@ -171,6 +171,6 @@ io.on('connection', socket => {
 
 })
 
-httpServer.listen(PORT, () => {
+httpsServer.listen(PORT, () => {
     console.log('Server is running...');
 });
