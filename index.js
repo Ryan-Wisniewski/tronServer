@@ -84,7 +84,7 @@ io.on('connection', socket => {
         let count = 0
         for(let i = 0; i < players.length; i++){
             if(players[i].direction !== null){
-                console.log('Player added direction',players[i])
+                // console.log('Player added direction',players[i])
                 count++
             }
         }
@@ -150,7 +150,7 @@ io.on('connection', socket => {
         players[1].y = 14
         players[2].y = 42
         players[3].y = 42
-        console.log('Reset, Ready for players input...\n',players)
+        // console.log('Reset, Ready for players input...\n',players)
         socket.broadcast.emit('gameOver', JSON.stringify({message: true}))
         socket.emit('gameOver', JSON.stringify({message: true}))
         return clearInterval(gameTimer)
