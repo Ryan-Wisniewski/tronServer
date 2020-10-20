@@ -16,12 +16,8 @@ const httpsServer = require('https').createServer((req, res) => {
     res.setHeader('Content-Type', 'text/html');
 });
 
-var corsOptions = {
-    origin: '*',
-    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-  }
 
-httpsServer.use(cors(corsOptions))
+httpsServer.use(cors())
 const io = require('socket.io')(httpsServer);
 
 let game = []
