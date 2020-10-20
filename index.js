@@ -1,6 +1,5 @@
 const Game = require('./gameLogic')
 const collisionCheck = require('./collisionCheck');
-const { reset } = require('nodemon');
 
 const PORT = process.env.PORT || 8000
 
