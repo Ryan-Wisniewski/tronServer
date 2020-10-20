@@ -12,12 +12,17 @@ const PORT = process.env.PORT || 8000
 // const io = require('socket.io')(httpServer);
 
 //# FOR DEPLOYMENT
-const httpsServer = require('https').createServer((req, res) => {
-    res.setHeader('Content-Type', 'text/html', {"Access-Control-Allow-Origin": '*'})
+const httpsServer = require('http').createServer((req, res) => {
+    const headers = {
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        "Access-Control-Allow-Origin": "*", //or the specific origin you want to give access to,
+        "Access-Control-Allow-Credentials": false
+    };
+    res.writeHead(200, headers);
+    res.end();
 });
 
 
-httpsServer.use(cors())
 const io = require('socket.io')(httpsServer);
 
 let game = []
