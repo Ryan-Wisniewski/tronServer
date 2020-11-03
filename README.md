@@ -1,11 +1,9 @@
 # Snake Online
-###### Currently game only works if 4 active users pick a direction
 ###### Tip: User can open multiple clients to connect.
 ###### Dont hit anyone's tail or game over
 ###### Be the last one left to win
 
 # TODO
-###### Add a force start button. For < 4 users
 ###### add screenNames
 ###### add chat for > 4 users
 ###### add AI
