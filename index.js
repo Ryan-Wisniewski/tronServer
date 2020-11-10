@@ -1,7 +1,7 @@
-let cors = require('cors')
+const Game = require('./assets/gameLogic')
+const collisionCheck = require('./assets/collisionCheck');
 
-const Game = require('./gameLogic')
-const collisionCheck = require('./collisionCheck');
+const easyAi = require('./assets/easyAi')
 
 const PORT = process.env.PORT || 8000
 
@@ -48,10 +48,85 @@ if(game.length === 0){
     }
 }
 // console.log(game)
+const start = (socket) => {
+    console.log('Starting Game!!!')
+    count = 0
+    gameOver = true
+    gameTimer = setInterval(() => {
+        for(let i = 0; i < players.length; i++){
+            if(players[i].x ===  null || players[i].y === null){
+                // console.log('passing Push to players...')
+            } else {
+                //add to array cause player is alive
+                coordsArray.push({x: players[i].x, y:players[i].y})
+            }
+            if(players[i].userId === "BOT"){
+                let test = easyAi(players[i].x, players[i].y, players[i].direction, coordsArray)
+                // console.log("TESTING...", test)
+                players[i].direction = test
+            }
+        }
+        Game(players)
+        if(collisionCheck(players, coordsArray) !== false){
+            const check = collisionCheck(players, coordsArray)
+            // console.log(check)
+            for(let i = 0; i < check.length; i++){
+                players[check[i]].userId = null
+                players[check[i]].direction = null
+                players[check[i]].x = null
+                players[check[i]].y = null
+            }
+            winnerCheck(socket)
+        }
+        socket.broadcast.emit('game-start', JSON.stringify(players))
+        socket.emit('game-start', JSON.stringify(players))
+    },300)
+}
+
+const winnerCheck = (socket) => {
+    console.log('Player is dead...')
+    let temp = 4
+    for(let i = 0; i < players.length; i++){
+        if(players[i].userId === null || undefined){
+            temp--
+        }
+    }
+    // console.log(temp)
+    if(temp === 1 || temp === 0){
+        reset(socket)
+    }
+}
+
+const reset = (socket) => {
+    console.log('Halting GAME...')
+    //for loop here you add the userid back in
+    for(let i = 0; i < playersId.length; i++){
+        players[i].userId = playersId[i]
+    }
+    count = 0
+    coordsArray = []
+    gameOver = false
+    players[0].direction = null
+    players[1].direction = null
+    players[2].direction = null
+    players[3].direction = null
+    players[0].x = 16
+    players[1].x = 48
+    players[2].x = 16
+    players[3].x = 48
+    players[0].y = 14
+    players[1].y = 14
+    players[2].y = 42
+    players[3].y = 42
+    // console.log('Reset, Ready for players input...\n',players)
+    socket.broadcast.emit('gameOver', JSON.stringify({message: true}))
+    socket.emit('gameOver', JSON.stringify({message: true}))
+    return clearInterval(gameTimer)
+}
 
 // ServerSocketLogic@@@Here
 io.on('connection', socket => {
-        // init connection
+    // init connection
     if(playersId.length < 4){
         playersId.push(socket.id)
     } else if(playersId.length >= 4){
@@ -76,10 +151,8 @@ io.on('connection', socket => {
                     if(data.userId === players[i].userId && data.direction !== players[i].direction){
                         // console.log("New Direction: ", data.userId, players[i].userId)
                         players[i].direction = data.direction
-                    }
-                }
-            }
-        }
+                }   }
+        }}
         //check if all players ready
         let count = 0
         for(let i = 0; i < players.length; i++){
@@ -89,72 +162,34 @@ io.on('connection', socket => {
             }
         }
         if(count === players.length && gameOver === false){
-            console.log('Starting Game!!!')
-            count = 0
-            gameOver= true
-            gameTimer = setInterval(() => {
-                for(let i = 0; i < players.length; i++){
-                    if(players[i].x ===  null || players[i].y === null){
-                        console.log('passing Push to players...')
-                    } else {
-                        //add to array cause player is alive
-                        coordsArray.push({x: players[i].x, y:players[i].y})
-                    }
-                }
-                Game(players)
-                if(collisionCheck(players, coordsArray) !== false){
-                    const check = collisionCheck(players, coordsArray)
-                    players[check].userId = null
-                    players[check].direction = null
-                    players[check].x = null
-                    players[check].y = null
-                    winnerCheck()
-                }
-                socket.broadcast.emit('game-start', JSON.stringify(players))
-                socket.emit('game-start', JSON.stringify(players))
-            },300)
+            start(socket)
         }
         // console.log('New Direction', players)
     })
 
-    const winnerCheck = () => {
-        console.log('Player is dead...')
-        let temp = 4
-        for(let i = 0; i < players.length; i++){
-            if(players[i].userId === null){
-                temp--
+    socket.on('initNewGame', () => {
+        if(gameOver === false){
+            console.log('Force Starting')
+            let count = 0
+            for(let i = 0; i < players.length; i++){
+                if(players[i].direction !== null){
+                    count++
+                }
+                if(players[i].userId === null){
+                    players[i].userId = 'BOT'
+                }
+            }
+            if(count == 0){
+                console.log('Passing no directions selected')
+            } else {
+                console.log(`Adding ${players.length - count} bots...`)
+                gameOver = true
+                start(socket)
             }
         }
-        if(temp === 1){
-            reset()
-        }
-    }
-
-    const reset = () => {
-        console.log('Halting GAME one player is alive...')
-        //for loop here you add the userid back in
-        for(let i = 0; i < players.length; i++){
-            players[i].userId = playersId[i]
-        }
-        coordsArray = []
-        gameOver = false
-        players[0].direction = null
-        players[1].direction = null
-        players[2].direction = null
-        players[3].direction = null
-        players[0].x = 16
-        players[1].x = 48
-        players[2].x = 16
-        players[3].x = 48
-        players[0].y = 14
-        players[1].y = 14
-        players[2].y = 42
-        players[3].y = 42
-        // console.log('Reset, Ready for players input...\n',players)
-        socket.broadcast.emit('gameOver', JSON.stringify({message: true}))
-        socket.emit('gameOver', JSON.stringify({message: true}))
-        return clearInterval(gameTimer)
-    }
+        // console.log(players)
+        return
+    })
 
     socket.on('disconnect', (res) => {
         console.log('User Disconnected...', socket.id)
