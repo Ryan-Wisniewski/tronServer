@@ -2,6 +2,7 @@ const Game = require('./assets/gameLogic')
 const collisionCheck = require('./assets/collisionCheck');
 
 const easyAi = require('./assets/easyAi')
+const hardAi = require('./assets/hardAi')
 
 const PORT = process.env.PORT || 8000
 
@@ -61,7 +62,7 @@ const start = (socket) => {
                 coordsArray.push({x: players[i].x, y:players[i].y})
             }
             if(players[i].userId === "BOT"){
-                let test = easyAi(players[i].x, players[i].y, players[i].direction, coordsArray)
+                let test = hardAi(players[i].x, players[i].y, players[i].direction, coordsArray)
                 // console.log("TESTING...", test)
                 players[i].direction = test
             }
