@@ -4,8 +4,6 @@
 // if 2 spaces from ded change direction !backwards
 // run until dead
 
-backwards = {37:39, 38:40, 39:37, 40:38}
-
 const easyAi = (x, y, direction, coords) => {
     // console.log(x,y,direction,coords)
     if(direction === null){
