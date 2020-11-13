@@ -30,12 +30,12 @@ let game = []
 let playersId = []
 let players = [
     {x: 16,y: 14, userId: null, direction: null},
-    {x: 48,y: 14, userId: null, direction: null},
-    {x: 16,y: 42, userId: null, direction: null},
-    {x: 48,y: 42, userId: null, direction: null}
+    {x: 47,y: 14, userId: null, direction: null},
+    {x: 16,y: 41, userId: null, direction: null},
+    {x: 47,y: 41, userId: null, direction: null}
 ]
 let leftOvers = [] // for people waiting in queu
-let coordsArray = []
+let coordsArray = [{x: 16,y: 14,}, {x: 48,y: 14,}, {x: 16,y: 42,}, {x: 48,y: 42,}]
 let x = 64
 let y = 56
 let gameTimer
@@ -66,6 +66,19 @@ const start = (socket) => {
                 // console.log("TESTING...", test)
                 players[i].direction = test
             }
+            for(let i = 0; i < players.length; i++){
+                const check = players.filter(pos => (players[i].userId !== null && players[i].x === pos.x && players[i].y === pos.y))
+                if(check.length > 1){
+                    console.log('Players dead...', check)
+                    for(let i = 0; i < check.length; i++){
+                        let index = players.indexOf(check[i])
+                        players[index].userId = null
+                        players[index].direction = null
+                        players[index].x = null
+                        players[index].y = null
+                    }
+                }
+            }
         }
         Game(players)
         if(collisionCheck(players, coordsArray) !== false){
@@ -79,6 +92,7 @@ const start = (socket) => {
             }
             winnerCheck(socket)
         }
+        //check if players on top of each other.
         socket.broadcast.emit('game-start', JSON.stringify(players))
         socket.emit('game-start', JSON.stringify(players))
     },300)
@@ -112,13 +126,13 @@ const reset = (socket) => {
     players[2].direction = null
     players[3].direction = null
     players[0].x = 16
-    players[1].x = 48
+    players[1].x = 47
     players[2].x = 16
-    players[3].x = 48
+    players[3].x = 47
     players[0].y = 14
     players[1].y = 14
-    players[2].y = 42
-    players[3].y = 42
+    players[2].y = 41
+    players[3].y = 41
     // console.log('Reset, Ready for players input...\n',players)
     socket.broadcast.emit('gameOver', JSON.stringify({message: true}))
     socket.emit('gameOver', JSON.stringify({message: true}))
