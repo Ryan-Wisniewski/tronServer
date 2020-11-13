@@ -35,7 +35,7 @@ let players = [
     {x: 47,y: 41, userId: null, direction: null}
 ]
 let leftOvers = [] // for people waiting in queu
-let coordsArray = [{x: 16,y: 14,}, {x: 48,y: 14,}, {x: 16,y: 42,}, {x: 48,y: 42,}]
+let coordsArray = [{x: 16,y: 14}, {x: 47,y: 14}, {x: 16,y: 41}, {x: 47,y: 41}]
 let x = 64
 let y = 56
 let gameTimer
@@ -62,21 +62,21 @@ const start = (socket) => {
                 coordsArray.push({x: players[i].x, y:players[i].y})
             }
             if(players[i].userId === "BOT"){
-                let test = hardAi(players[i].x, players[i].y, players[i].direction, coordsArray)
+                let botDirection = hardAi(players[i].x, players[i].y, players[i].direction, coordsArray)
                 // console.log("TESTING...", test)
-                players[i].direction = test
+                players[i].direction = botDirection
             }
-            for(let i = 0; i < players.length; i++){
-                const check = players.filter(pos => (players[i].userId !== null && players[i].x === pos.x && players[i].y === pos.y))
-                if(check.length > 1){
-                    console.log('Players dead...', check)
-                    for(let i = 0; i < check.length; i++){
-                        let index = players.indexOf(check[i])
-                        players[index].userId = null
-                        players[index].direction = null
-                        players[index].x = null
-                        players[index].y = null
-                    }
+        }
+        for(let i = 0; i < players.length; i++){
+            const check = players.filter(pos => (players[i].userId !== null && players[i].x === pos.x && players[i].y === pos.y))
+            if(check.length > 1){
+                console.log('Players dead...', check)
+                for(let i = 0; i < check.length; i++){
+                    let index = players.indexOf(check[i])
+                    players[index].userId = null
+                    players[index].direction = null
+                    players[index].x = null
+                    players[index].y = null
                 }
             }
         }
@@ -90,8 +90,9 @@ const start = (socket) => {
                 players[check[i]].x = null
                 players[check[i]].y = null
             }
-            winnerCheck(socket)
+            console.log('Player is dead...')
         }
+        winnerCheck(socket)
         //check if players on top of each other.
         socket.broadcast.emit('game-start', JSON.stringify(players))
         socket.emit('game-start', JSON.stringify(players))
@@ -99,7 +100,6 @@ const start = (socket) => {
 }
 
 const winnerCheck = (socket) => {
-    console.log('Player is dead...')
     let temp = 4
     for(let i = 0; i < players.length; i++){
         if(players[i].userId === null || undefined){
