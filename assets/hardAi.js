@@ -3,7 +3,6 @@ backwards = {37:39, 38:40, 39:37, 40:38}
 const hardAi = (x, y, direction, coords) => {
     if(direction === null){
         direction = Math.floor(Math.random() * 4) + 37
-        // direction = 37 //for testin
         // console.log(direction)
     }
     for(let i = 0; i < coords.length; i++){

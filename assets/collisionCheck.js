@@ -11,13 +11,11 @@ const collisionCheck = (playersArray, collisionArray) => {
                     if(!temp.includes(i)){
                         temp.push(i)
                     }
-                    // return temp
                 }
             }
         }
     }
     if(temp.length > 0){
-        // console.log('temp1', temp)
         return temp
     } else {
         return false
