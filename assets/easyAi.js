@@ -1,9 +1,3 @@
-// bot need
-// random direction
-// while moving in that direction look for a wall
-// if 2 spaces from ded change direction !backwards
-// run until dead
-
 const easyAi = (x, y, direction, coords) => {
     // console.log(x,y,direction,coords)
     if(direction === null){

@@ -70,7 +70,7 @@ const start = (socket) => {
         for(let i = 0; i < players.length; i++){
             const check = players.filter(pos => (players[i].userId !== null && players[i].x === pos.x && players[i].y === pos.y))
             if(check.length > 1){
-                console.log('Players dead...', check)
+                console.log('Players dead...')
                 for(let i = 0; i < check.length; i++){
                     let index = players.indexOf(check[i])
                     players[index].userId = null
@@ -115,7 +115,11 @@ const winnerCheck = (socket) => {
 const reset = (socket) => {
     console.log('Halting GAME...')
     //for loop here you add the userid back in
+    let winner = []
     for(let i = 0; i < playersId.length; i++){
+        if(players[i].userId !== null){
+            winner.push(players[i].userId)
+        }
         players[i].userId = playersId[i]
     }
     count = 0
@@ -134,8 +138,8 @@ const reset = (socket) => {
     players[2].y = 41
     players[3].y = 41
     // console.log('Reset, Ready for players input...\n',players)
-    socket.broadcast.emit('gameOver', JSON.stringify({message: true}))
-    socket.emit('gameOver', JSON.stringify({message: true}))
+    socket.broadcast.emit('gameOver', JSON.stringify({message: true, winner: winner, players: players}))
+    socket.emit('gameOver', JSON.stringify({message: true, winner: winner, players: players}))
     return clearInterval(gameTimer)
 }
 
